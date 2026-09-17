@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="resona-grad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0284C7"/>
+      <stop offset="0.5" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+    <linearGradient id="glow-grad" x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <filter id="blur-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  
+  <!-- Outer rounded container -->
+  <rect width="48" height="48" rx="14" fill="#FFFFFF"/>
+  <rect x="0.5" y="0.5" width="47" height="47" rx="13.5" stroke="#E2E8F0"/>
+  <rect x="0.5" y="0.5" width="47" height="47" rx="13.5" stroke="url(#resona-grad)" stroke-opacity="0.2"/>
+
+  <!-- Concentric acoustic waves and resonance iris -->
+  <circle cx="24" cy="24" r="18" stroke="#38BDF8" stroke-opacity="0.2" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <circle cx="24" cy="24" r="13" stroke="#2563EB" stroke-opacity="0.35" stroke-width="1.5"/>
+  
+  <!-- Biometric acoustic wave bars -->
+  <path d="M12 24C12 21 13 18 15 16" stroke="url(#glow-grad)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M12 24C12 27 13 30 15 32" stroke="url(#glow-grad)" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <path d="M36 24C36 21 35 18 33 16" stroke="url(#glow-grad)" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M36 24C36 27 35 30 33 32" stroke="url(#glow-grad)" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Center core sound pulse -->
+  <circle cx="24" cy="24" r="6" fill="url(#resona-grad)" filter="url(#blur-glow)"/>
+  <circle cx="24" cy="24" r="2.5" fill="#FFFFFF"/>
+  
+  <!-- Vertical resonance bars -->
+  <line x1="20" y1="18" x2="20" y2="30" stroke="#0284C7" stroke-width="2" stroke-linecap="round"/>
+  <line x1="28" y1="18" x2="28" y2="30" stroke="#4F46E5" stroke-width="2" stroke-linecap="round"/>
+</svg>
