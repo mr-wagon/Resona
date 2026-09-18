@@ -4,24 +4,17 @@ import {
   Square, 
   Upload, 
   UserCheck, 
-  ShieldCheck, 
   CheckCircle2, 
-  AlertCircle, 
   Loader2, 
-  Sparkles, 
   Fingerprint, 
-  Radio, 
-  Lock, 
-  Play, 
-  Pause,
-  RefreshCw,
-  Info
+  Lock
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { VoiceProfile } from '../../types';
 import { audioEngine } from '../../services/audioEngine';
 import { DemoBadge } from '../common/DemoBadge';
 import { ScreenId } from '../layout/Navbar';
+import { LiquidButton } from '../ui/liquid-glass-button';
 
 interface EnrollmentScreenProps {
   onAddProfile: (profile: VoiceProfile) => void;
@@ -50,7 +43,6 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
   const [recordedDuration, setRecordedDuration] = useState(0);
-  const [micActive, setMicActive] = useState(false);
   const [isSynthesizingEmbedding, setIsSynthesizingEmbedding] = useState(false);
   const [enrollmentComplete, setEnrollmentComplete] = useState(false);
   const [audioInputMethod, setAudioInputMethod] = useState<'mic' | 'upload'>('mic');
@@ -61,9 +53,7 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
   const animFrameRef = useRef<number | null>(null);
 
   // Quality indicators
-  const noiseFloorPass = true;
   const durationPass = recordedDuration >= 10 || recordingSeconds >= 10;
-  const clarityScore = recordedDuration > 0 ? 97.4 : 0;
 
   useEffect(() => {
     return () => {
@@ -81,7 +71,6 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
     }
 
     setIsRecording(true);
-    setMicActive(true);
     setRecordingSeconds(0);
     setRecordedAudioUrl(null);
 
@@ -104,7 +93,6 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
     }
 
     setIsRecording(false);
-    setMicActive(false);
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
     }
@@ -145,11 +133,11 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
       const w = rect.width;
       const h = rect.height;
 
-      ctx.fillStyle = '#0F172A';
+      ctx.fillStyle = '#060812';
       ctx.fillRect(0, 0, w, h);
 
-      // Center line
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      // Grid line
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
       ctx.beginPath();
       ctx.moveTo(0, h / 2);
       ctx.lineTo(w, h / 2);
@@ -159,7 +147,7 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
       ctx.lineWidth = 2.5;
       ctx.strokeStyle = '#00F2FE';
       ctx.shadowColor = '#00F2FE';
-      ctx.shadowBlur = 8;
+      ctx.shadowBlur = 10;
       ctx.beginPath();
 
       const sliceWidth = w / dataArray.length;
@@ -198,16 +186,14 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
 
   const handleEnrollProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !role || !employeeId) {
-      onShowToast('warning', 'Incomplete Form', 'Please complete Full Name, Role, and Employee ID.');
-      return;
-    }
-    if (!consentAgreed) {
-      onShowToast('warning', 'Consent Required', 'Please confirm explicit biometric consent agreement.');
-      return;
-    }
+
     if (!recordedAudioUrl) {
-      onShowToast('warning', 'Voice Sample Needed', 'Please record or upload a voice sample before enrolling.');
+      onShowToast('warning', 'Voice Sample Missing', 'Please record speech or upload an audio sample first.');
+      return;
+    }
+
+    if (!consentAgreed) {
+      onShowToast('warning', 'Consent Required', 'Explicit biometric consent must be acknowledged before enrollment.');
       return;
     }
 
@@ -240,7 +226,7 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#0284C7', '#2563EB', '#38BDF8', '#10B981'],
+        colors: ['#00F2FE', '#6366F1', '#38BDF8', '#10B981'],
       });
 
       if (soundEnabled) {
@@ -254,22 +240,22 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Header */}
-      <div className="p-6 rounded-2xl border border-sky-100 bg-white shadow-soft-blue flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl border border-white/10 bg-[#0C1222]/85 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-black text-slate-900 font-display">
+            <h2 className="text-2xl font-bold text-white font-display tracking-tight">
               Voice Profile Enrollment & Biometric Registration
             </h2>
             <DemoBadge type="live" />
           </div>
-          <p className="text-xs text-slate-500 font-sans mt-0.5">
+          <p className="text-xs text-slate-400 font-sans mt-0.5">
             Register authorized executive and treasury personnel voiceprints using 512-dimensional ECAPA-TDNN deep neural embeddings
           </p>
         </div>
 
         <button
           onClick={() => onNavigate('profiles')}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 hover:bg-sky-100 text-xs font-semibold transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-cyan-300 hover:bg-white/10 text-xs font-semibold transition-all cursor-pointer"
         >
           <span>View Identity Directory</span>
         </button>
@@ -278,17 +264,17 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
       <form onSubmit={handleEnrollProfile} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Identity Metadata */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="p-6 rounded-2xl border border-sky-100 bg-white shadow-soft-blue space-y-4">
+          <div className="p-6 rounded-2xl border border-white/10 bg-[#0C1222]/85 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-4">
             <div className="flex items-center gap-2">
-              <UserCheck className="h-5 w-5 text-blue-600" />
-              <h3 className="text-base font-bold text-slate-900 font-display">
+              <UserCheck className="h-5 w-5 text-cyan-400" />
+              <h3 className="text-base font-bold text-white font-display">
                 Executive Identity Information
               </h3>
             </div>
 
-            <div className="space-y-3 text-xs font-sans">
+            <div className="space-y-3.5 text-xs font-sans">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1.5">
                   Full Legal Name *
                 </label>
                 <input
@@ -297,13 +283,13 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
                   placeholder="e.g. David Chen"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 text-xs font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#080D1A] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 text-white text-xs font-medium placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">
+                  <label className="block font-semibold text-slate-300 mb-1.5">
                     Corporate Role / Title *
                   </label>
                   <input
@@ -312,11 +298,11 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
                     placeholder="e.g. Chief Financial Officer"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 text-xs font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#080D1A] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 text-white text-xs font-medium placeholder:text-slate-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">
+                  <label className="block font-semibold text-slate-300 mb-1.5">
                     Employee / Identity ID *
                   </label>
                   <input
@@ -325,140 +311,145 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
                     placeholder="e.g. EMP-9942"
                     value={employeeId}
                     onChange={(e) => setEmployeeId(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 text-xs font-mono font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#080D1A] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 text-white text-xs font-mono font-medium placeholder:text-slate-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">
+                  <label className="block font-semibold text-slate-300 mb-1.5">
                     Department
                   </label>
                   <select
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 text-xs font-medium bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#080D1A] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 text-white text-xs font-medium"
                   >
-                    <option>Executive Leadership</option>
-                    <option>Corporate Treasury</option>
-                    <option>Finance & Accounting</option>
-                    <option>Global Cyber Defense</option>
-                    <option>Legal & Compliance</option>
+                    <option className="bg-[#080D1A] text-white">Executive Leadership</option>
+                    <option className="bg-[#080D1A] text-white">Corporate Treasury</option>
+                    <option className="bg-[#080D1A] text-white">Finance & Accounting</option>
+                    <option className="bg-[#080D1A] text-white">Global Cyber Defense</option>
+                    <option className="bg-[#080D1A] text-white">Legal & Compliance</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">
-                    Security Authorization Tier
+                  <label className="block font-semibold text-slate-300 mb-1.5">
+                    Voiceprint Authorization Scope
                   </label>
                   <select
                     value={securityTier}
                     onChange={(e) => setSecurityTier(e.target.value as VoiceProfile['securityTier'])}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 text-xs font-medium bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#080D1A] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 text-white text-xs font-medium"
                   >
-                    <option>Tier 1 - Executive</option>
-                    <option>Tier 2 - Finance Approver</option>
-                    <option>Tier 3 - Standard Enterprise</option>
-                    <option>Tier 4 - VIP Client</option>
+                    <option value="Tier 1 - Executive" className="bg-[#080D1A] text-white">Executive Authorization</option>
+                    <option value="Tier 2 - Finance Approver" className="bg-[#080D1A] text-white">Operational & Financial Approver</option>
+                    <option value="Tier 3 - Standard Enterprise" className="bg-[#080D1A] text-white">Standard Enterprise Access</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-slate-300 mb-1.5">
                   Corporate Email
                 </label>
                 <input
                   type="email"
-                  placeholder="e.g. david.chen@acme-corp.com"
+                  placeholder="e.g. david.chen@enterprise.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-slate-900 text-xs font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#080D1A] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 text-white text-xs font-medium placeholder:text-slate-500"
                 />
               </div>
             </div>
-          </div>
 
-          {/* Biometric Consent Governance Card */}
-          <div className="p-5 rounded-2xl border border-sky-100 bg-sky-50/50 space-y-3 text-xs font-sans">
-            <div className="flex items-center gap-2">
-              <Lock className="h-4 w-4 text-blue-600" />
-              <h4 className="font-bold text-slate-900">Biometric Consent & DPDP / GDPR Compliance Notice</h4>
+            {/* Biometric consent box */}
+            <div className="p-4 rounded-xl border border-cyan-500/20 bg-cyan-950/20 space-y-2">
+              <div className="flex items-start gap-2.5">
+                <Lock className="h-4 w-4 text-cyan-400 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-xs font-bold text-white">Explicit Biometric Consent (DPDP / GDPR)</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed mt-0.5">
+                    Voice embeddings are stored as 512-dimensional irreversible mathematical hashes. Raw audio recordings are never permanently retained.
+                  </p>
+                </div>
+              </div>
+
+              <label className="flex items-center gap-2 pt-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentAgreed}
+                  onChange={(e) => setConsentAgreed(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-[#080D1A] accent-cyan-400 cursor-pointer"
+                />
+                <span className="text-xs font-medium text-slate-300">
+                  I hereby authorize cryptographic voiceprint enrollment
+                </span>
+              </label>
             </div>
-
-            <p className="text-slate-600 leading-relaxed text-[11px]">
-              Voice samples are converted into non-invertible, irreversible 512-dimensional numerical vectors. Raw voice audio is purged immediately post-enrollment. In accordance with Digital Personal Data Protection (DPDP) and enterprise security policy, registered identities possess an unconditional right to biometric revocation and erasure.
-            </p>
-
-            <label className="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                required
-                checked={consentAgreed}
-                onChange={(e) => setConsentAgreed(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-              />
-              <span className="text-[11px] font-semibold text-slate-800">
-                I authorize Resona to extract biometric acoustic embeddings from my voice sample for cryptographic identity verification.
-              </span>
-            </label>
           </div>
         </div>
 
-        {/* Right Column: Audio Sample Capture & Quality Gate */}
+        {/* Right Column: Audio Capture Studio */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="p-6 rounded-2xl border border-sky-100 bg-white shadow-soft-blue space-y-4">
+          <div className="p-6 rounded-2xl border border-white/10 bg-[#0C1222]/85 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] space-y-5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Mic className="h-5 w-5 text-blue-600" />
-                <h3 className="text-base font-bold text-slate-900 font-display">
-                  Voiceprint Sample Acquisition
+              <div>
+                <h3 className="text-base font-bold text-white font-display">
+                  Acoustic Speech Capture Studio
                 </h3>
+                <p className="text-xs text-slate-400">
+                  Provide at least 10 seconds of clear speech for deep feature vector extraction
+                </p>
               </div>
 
-              {/* Mode toggle */}
-              <div className="flex p-0.5 rounded-lg bg-slate-100 text-xs font-medium">
+              {/* Input Method Switcher */}
+              <div className="flex items-center p-1 rounded-xl bg-[#080D1A] border border-white/10 text-xs font-medium">
                 <button
                   type="button"
                   onClick={() => setAudioInputMethod('mic')}
-                  className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                    audioInputMethod === 'mic' ? 'bg-white font-bold text-slate-900 shadow-2xs' : 'text-slate-600'
+                  className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                    audioInputMethod === 'mic'
+                      ? 'bg-cyan-500/20 text-cyan-200 font-semibold border border-cyan-500/30'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  Microphone
+                  Live Mic
                 </button>
                 <button
                   type="button"
                   onClick={() => setAudioInputMethod('upload')}
-                  className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                    audioInputMethod === 'upload' ? 'bg-white font-bold text-slate-900 shadow-2xs' : 'text-slate-600'
+                  className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                    audioInputMethod === 'upload'
+                      ? 'bg-cyan-500/20 text-cyan-200 font-semibold border border-cyan-500/30'
+                      : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  Upload File
+                  File Upload
                 </button>
               </div>
             </div>
 
-            {/* Microphone Recording UI */}
+            {/* Live Microphone Mode */}
             {audioInputMethod === 'mic' && (
               <div className="space-y-4">
-                {/* Live Oscilloscope canvas */}
-                <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
+                {/* Live Oscilloscope */}
+                <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#060812] shadow-inner">
                   <canvas
                     ref={micCanvasRef}
                     className="w-full h-32 block"
                   />
                   {!isRecording && !recordedAudioUrl && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 text-slate-400 text-xs">
-                      <Mic className="h-6 w-6 text-sky-400 mb-1" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#080D1A]/85 backdrop-blur-xs text-slate-400 text-xs">
+                      <Mic className="h-6 w-6 text-cyan-400 mb-1 animate-pulse" />
                       <span>Click Start Recording to calibrate microphone</span>
                     </div>
                   )}
 
                   {isRecording && (
-                    <div className="absolute top-2 right-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-950/80 border border-red-800 text-red-400 font-mono text-[10px]">
-                      <span className="h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                    <div className="absolute top-2 right-2 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-950/80 border border-rose-500/40 text-rose-300 font-mono text-[10px]">
+                      <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
                       <span>REC {recordingSeconds}s / 10s min</span>
                     </div>
                   )}
@@ -470,7 +461,7 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
                     <button
                       type="button"
                       onClick={startRecording}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold text-xs shadow-soft-blue hover:from-sky-600 hover:to-blue-700 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-semibold text-xs shadow-[0_0_20px_rgba(0,242,254,0.25)] hover:brightness-110 active:brightness-95 transition-all cursor-pointer"
                     >
                       <Mic className="h-4 w-4" />
                       <span>Start Voice Recording</span>
@@ -479,7 +470,7 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
                     <button
                       type="button"
                       onClick={stopRecording}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-xs shadow-md transition-all cursor-pointer animate-pulse"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-md transition-all cursor-pointer animate-pulse"
                     >
                       <Square className="h-4 w-4 fill-current" />
                       <span>Stop & Validate Sample ({recordingSeconds}s)</span>
@@ -491,7 +482,7 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
 
             {/* File Upload UI */}
             {audioInputMethod === 'upload' && (
-              <div className="p-6 border-2 border-dashed border-sky-200 rounded-xl text-center bg-sky-50/20">
+              <div className="p-6 border-2 border-dashed border-white/10 rounded-2xl text-center bg-[#080D1A]/60">
                 <input
                   type="file"
                   accept="audio/*"
@@ -500,40 +491,40 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
                   id="enroll-file"
                 />
                 <label htmlFor="enroll-file" className="cursor-pointer block space-y-2">
-                  <Upload className="h-8 w-8 text-sky-600 mx-auto" />
-                  <p className="text-xs font-semibold text-slate-800">
+                  <Upload className="h-8 w-8 text-cyan-400 mx-auto" />
+                  <p className="text-xs font-semibold text-white">
                     Upload pristine reference voice recording (WAV or MP3)
                   </p>
-                  <p className="text-[10px] text-slate-500">Minimum 10 seconds of clear speech recommended</p>
+                  <p className="text-[10px] text-slate-400">Minimum 10 seconds of clear speech recommended</p>
                 </label>
               </div>
             )}
 
             {/* Voice Quality Gate Checklist */}
-            <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/80 space-y-2">
-              <span className="text-[11px] font-mono font-bold uppercase text-slate-500 tracking-wider block">
+            <div className="p-4 rounded-xl border border-white/5 bg-[#080D1A]/80 space-y-2">
+              <span className="text-[11px] font-mono font-bold uppercase text-slate-400 tracking-wider block">
                 Acoustic Quality Gate (ISO/IEC 19794-13)
               </span>
 
               <div className="space-y-1.5 text-xs font-sans">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Ambient Noise Floor (&lt; -30dBFS):</span>
-                  <span className="inline-flex items-center gap-1 font-mono font-bold text-emerald-600">
+                  <span className="text-slate-400">Ambient Noise Floor (&lt; -30dBFS):</span>
+                  <span className="inline-flex items-center gap-1 font-mono font-bold text-emerald-400">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Optimal
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Speech Duration (&ge; 10 seconds):</span>
+                  <span className="text-slate-400">Speech Duration (&ge; 10 seconds):</span>
                   <span className={`inline-flex items-center gap-1 font-mono font-bold ${
-                    durationPass ? 'text-emerald-600' : 'text-slate-400'
+                    durationPass ? 'text-emerald-400' : 'text-slate-500'
                   }`}>
-                    {durationPass ? <CheckCircle2 className="h-3.5 w-3.5" /> : <span className="h-2 w-2 rounded-full bg-slate-300" />}
+                    {durationPass ? <CheckCircle2 className="h-3.5 w-3.5" /> : <span className="h-2 w-2 rounded-full bg-white/20" />}
                     {recordedDuration > 0 ? `${recordedDuration.toFixed(1)}s` : 'Pending'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Vocal Clarity Index:</span>
-                  <span className="font-mono font-bold text-sky-700">
+                  <span className="text-slate-400">Vocal Clarity Index:</span>
+                  <span className="font-mono font-bold text-cyan-300">
                     {recordedDuration > 0 ? '98.4% (Pristine)' : '---'}
                   </span>
                 </div>
@@ -541,32 +532,30 @@ export const EnrollmentScreen: React.FC<EnrollmentScreenProps> = ({
             </div>
 
             {/* Submit & Generate Embedding */}
-            <button
+            <LiquidButton
               type="submit"
               disabled={isSynthesizingEmbedding || !recordedAudioUrl || !consentAgreed}
-              className={`w-full py-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                isSynthesizingEmbedding || !recordedAudioUrl || !consentAgreed
-                  ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-soft-blue hover:from-blue-700 hover:to-indigo-700 hover:shadow-glow-blue'
+              className={`w-full text-white font-semibold text-xs cursor-pointer ${
+                isSynthesizingEmbedding || !recordedAudioUrl || !consentAgreed ? 'opacity-40 pointer-events-none' : ''
               }`}
             >
               {isSynthesizingEmbedding ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin text-cyan-400 mr-2" />
                   <span>Synthesizing 512-Dim Voiceprint Embedding...</span>
                 </>
               ) : enrollmentComplete ? (
                 <>
-                  <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400 mr-2" />
                   <span>Profile Enrolled Successfully!</span>
                 </>
               ) : (
                 <>
-                  <Fingerprint className="h-4 w-4" />
+                  <Fingerprint className="h-4 w-4 text-cyan-400 mr-2" />
                   <span>Generate Biometric Voiceprint & Enroll</span>
                 </>
               )}
-            </button>
+            </LiquidButton>
           </div>
         </div>
       </form>

@@ -17,32 +17,32 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
   const configs = {
     demo: {
       label: 'DEMO SIMULATION',
-      bg: 'bg-sky-50/90 text-sky-700 border-sky-200/80',
-      dot: 'bg-sky-500',
+      bg: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/25',
+      dot: 'bg-cyan-400',
       icon: Sparkles,
       tooltipTitle: 'Simulated Hackathon Dataset',
       tooltipText: 'This audio incident and model scores are pre-computed demonstration artifacts created for the Smart India Hackathon showcase to highlight transparent risk explainability without fabricating real live inference.',
     },
     experimental: {
       label: 'EXPERIMENTAL MODEL',
-      bg: 'bg-amber-50/90 text-amber-700 border-amber-200/80',
-      dot: 'bg-amber-500',
+      bg: 'bg-amber-500/10 text-amber-300 border-amber-500/25',
+      dot: 'bg-amber-400',
       icon: Info,
       tooltipTitle: 'Experimental Architecture (Beta)',
       tooltipText: 'This analysis utilizes experimental PhaseGuard zero-shot vocoder heuristics. Model weights are undergoing calibration and should not be used as the sole factor in critical financial authorization.',
     },
     live: {
       label: 'LOCAL INFERENCE READY',
-      bg: 'bg-indigo-50/90 text-indigo-700 border-indigo-200/80',
-      dot: 'bg-indigo-500',
+      bg: 'bg-indigo-500/10 text-indigo-300 border-indigo-500/25',
+      dot: 'bg-indigo-400',
       icon: ShieldCheck,
       tooltipTitle: 'Client Audio Stream Active',
       tooltipText: 'Audio is running directly through your browser Web Audio API analyzer in isolated ephemeral memory. Zero audio bytes are permanently persisted.',
     },
     verified: {
       label: 'BIOMETRIC MATCH',
-      bg: 'bg-emerald-50/90 text-emerald-700 border-emerald-200/80',
-      dot: 'bg-emerald-500',
+      bg: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
+      dot: 'bg-emerald-400',
       icon: ShieldCheck,
       tooltipTitle: 'High-Fidelity Match',
       tooltipText: 'Extracted speaker embedding exceeds the 78% cosine distance threshold against the enrolled corporate voiceprint profile.',
@@ -59,7 +59,7 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold tracking-wider border shadow-xs transition-all hover:scale-105 cursor-pointer ${current.bg}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold tracking-wider border shadow-xs transition-all hover:scale-105 cursor-pointer backdrop-blur-md ${current.bg}`}
       >
         <span className={`inline-block h-1.5 w-1.5 rounded-full ${current.dot} animate-pulse`} />
         <span>{current.label}</span>
@@ -68,17 +68,17 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
 
       {/* Tooltip */}
       {showTooltip && isOpen && (
-        <div className="absolute left-0 top-full mt-2 w-72 rounded-xl bg-white p-3 shadow-xl border border-sky-200 z-50 text-left animate-in fade-in duration-150">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
-            <Info className="h-3.5 w-3.5 text-sky-600" />
+        <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl bg-[#0D1424]/95 p-3.5 shadow-2xl border border-white/15 z-50 text-left animate-in fade-in duration-150 backdrop-blur-2xl">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-white">
+            <Info className="h-3.5 w-3.5 text-cyan-400" />
             <span>{current.tooltipTitle}</span>
           </div>
-          <p className="mt-1 text-[11px] leading-relaxed text-slate-600">
+          <p className="mt-1.5 text-[11px] leading-relaxed text-slate-300">
             {current.tooltipText}
           </p>
-          <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+          <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400 font-mono">
             <span>Resona Governance</span>
-            <span>SIH-2026 Prototype</span>
+            <span className="text-cyan-400">SIH-2026 Prototype</span>
           </div>
         </div>
       )}

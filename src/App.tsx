@@ -16,7 +16,9 @@ import { initialVoiceProfiles } from './data/profilesData';
 import { systemTelemetry } from './data/modelsData';
 import { AnalysisIncident, VoiceProfile } from './types';
 import { audioEngine } from './services/audioEngine';
-import { Shield, Sparkles, Heart } from 'lucide-react';
+import { GlassFilter } from './components/ui/liquid-glass-button';
+
+import { AccountSetupModal } from './components/account/AccountSetupModal';
 
 export function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('overview');
@@ -25,6 +27,7 @@ export function App() {
   const [profiles, setProfiles] = useState<VoiceProfile[]>(initialVoiceProfiles);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [accountSetupOpen, setAccountSetupOpen] = useState(false);
 
   const showToast = (type: 'success' | 'warning' | 'info', title: string, message: string) => {
     const id = Date.now().toString();
@@ -142,7 +145,10 @@ export function App() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-between selection:bg-blue-500/20 selection:text-blue-700">
+    <div className="relative min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+      {/* Global SVG Glass Distortion Filter */}
+      <GlassFilter />
+
       {/* Hero Geometric Floating Ambient Background */}
       <GeometricHeroBackground />
 
@@ -155,6 +161,7 @@ export function App() {
         onSelectIncident={handleSelectIncident}
         soundEnabled={soundEnabled}
         onToggleSound={() => setSoundEnabled(!soundEnabled)}
+        onOpenAccountSetup={() => setAccountSetupOpen(true)}
       />
 
       {/* Main Screen Content Viewport */}
@@ -167,6 +174,7 @@ export function App() {
             onSelectIncident={handleSelectIncident}
             telemetry={systemTelemetry}
             onFileUpload={handleFileUpload}
+            onOpenAccountSetup={() => setAccountSetupOpen(true)}
           />
         )}
 
@@ -175,6 +183,7 @@ export function App() {
             incident={activeIncident}
             onNavigate={setCurrentScreen}
             soundEnabled={soundEnabled}
+            onShowToast={showToast}
           />
         )}
 
@@ -195,12 +204,27 @@ export function App() {
         )}
 
         {currentScreen === 'enrollment' && (
-          <EnrollmentScreen
-            onAddProfile={handleAddProfile}
-            onNavigate={setCurrentScreen}
-            onShowToast={showToast}
-            soundEnabled={soundEnabled}
-          />
+          <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+            <div className="p-4 rounded-3xl bg-blue-50 border border-blue-200 text-blue-600 shadow-soft-blue">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" x2="12" y1="19" y2="22"/>
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold font-display text-slate-900">
+              Account Voice Setup & Onboarding
+            </h2>
+            <p className="text-sm text-slate-600 max-w-md">
+              Voice enrollment is secured inside the account onboarding workflow. Click below to launch the guided paragraph recording session.
+            </p>
+            <button
+              onClick={() => setAccountSetupOpen(true)}
+              className="px-6 py-2.5 rounded-full bg-blue-600 text-white font-semibold text-xs shadow-soft-blue hover:bg-blue-700 transition-all cursor-pointer"
+            >
+              Open Account & Voice Enrollment
+            </button>
+          </div>
         )}
 
         {currentScreen === 'profiles' && (
@@ -209,6 +233,7 @@ export function App() {
             onNavigate={setCurrentScreen}
             activeIncident={activeIncident}
             onShowToast={showToast}
+            onOpenAccountSetup={() => setAccountSetupOpen(true)}
           />
         )}
 
@@ -228,36 +253,43 @@ export function App() {
         )}
       </main>
 
+      {/* Account Setup Modal */}
+      <AccountSetupModal
+        isOpen={accountSetupOpen}
+        onClose={() => setAccountSetupOpen(false)}
+        onComplete={handleAddProfile}
+      />
+
       {/* Dynamic Toast Notifications Container */}
       <ToastContainer toasts={toasts} onDismiss={(id) => setToasts((prev) => prev.filter((t) => t.id !== id))} />
 
       {/* Enterprise Platform Footer */}
-      <footer className="relative z-10 border-t border-sky-100 bg-white/80 backdrop-blur-md py-6 mt-12">
+      <footer className="relative z-10 border-t border-sky-100/80 bg-white/80 backdrop-blur-xl py-6 mt-16 shadow-[0_-4px_20px_rgba(2,132,199,0.03)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-sans">
           <div className="flex items-center gap-2">
             <span className="font-extrabold font-display text-slate-900 tracking-tight">RESONA</span>
-            <span>•</span>
-            <span>Hear Beyond the Surface.</span>
+            <span className="text-slate-300">•</span>
+            <span className="text-slate-600 font-medium">Hear Beyond the Surface.</span>
             <span className="hidden md:inline text-slate-300">|</span>
             <span className="hidden md:inline text-slate-400">Smart India Hackathon 2026 Prototype</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono">
-            <span className="text-emerald-600 font-semibold flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Zero-Disk Storage Mode Active
+            <span className="text-emerald-600 font-semibold flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse" />
+              RAM-Only Ephemeral Storage
             </span>
             <button
               onClick={() => setCurrentScreen('privacy')}
-              className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+              className="text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
             >
               Privacy Architecture
             </button>
             <button
               onClick={() => setCurrentScreen('pipeline')}
-              className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+              className="text-slate-500 hover:text-blue-600 transition-colors cursor-pointer"
             >
-              Pipeline Specs
+              Live Pipeline
             </button>
           </div>
         </div>
@@ -267,3 +299,4 @@ export function App() {
 }
 
 export default App;
+

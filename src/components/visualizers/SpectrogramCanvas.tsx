@@ -211,7 +211,7 @@ export const SpectrogramCanvas: React.FC<SpectrogramCanvasProps> = ({
   };
 
   return (
-    <div className="relative w-full rounded-xl border border-slate-200 bg-slate-900 p-2.5 shadow-sm">
+    <div className="relative w-full rounded-2xl border border-white/10 bg-[#0A0E1A]/90 p-3 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
       <div className="flex items-center justify-between px-1 pb-2">
         <div className="flex items-center gap-2">
           <span className="flex h-2 w-2 rounded-full bg-cyan-400" />

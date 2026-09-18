@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { audioEngine } from '../../services/audioEngine';
-import { SpeakerSegment } from '../../types';
+import type { SpeakerSegment } from '../../types';
 
 interface WaveformCanvasProps {
   duration: number;
@@ -18,7 +18,7 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
   height = 140,
   interactive = true,
   onSeek,
-  accentColor = '#0284C7',
+  accentColor = '#00F2FE',
   isLiveMonitoring = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -34,7 +34,6 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
     const p: number[] = [];
     for (let i = 0; i < totalBars; i++) {
       const pos = i / totalBars;
-      // Speech modulation pattern with pauses
       const syllabic = Math.sin(pos * 40) * 0.35 + 0.45;
       const speechBurst = Math.sin(pos * 12) > -0.2 ? 1 : 0.08;
       const noise = (Math.random() * 0.25 - 0.125);
@@ -44,7 +43,6 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
     peaksRef.current = p;
   }
 
-  // Animation loop to track playback position and render
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -69,42 +67,41 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
       const w = rect.width;
       const h = rect.height;
 
-      // Clear with soft gradient background
+      // Dark obsidian-to-midnight gradient background
       const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-      bgGrad.addColorStop(0, '#FFFFFF');
-      bgGrad.addColorStop(1, '#F0F7FF');
+      bgGrad.addColorStop(0, '#090E1A');
+      bgGrad.addColorStop(1, '#06080F');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, w, h);
 
-      // Draw horizontal baseline
-      ctx.strokeStyle = 'rgba(226, 232, 240, 0.8)';
+      // Horizontal subtle baseline
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, h / 2);
       ctx.lineTo(w, h / 2);
       ctx.stroke();
 
-      // Draw speaker segment regions if provided
+      // Draw speaker segment regions
       speakers.forEach((spk) => {
         const startX = (spk.startTime / duration) * w;
         const endX = (spk.endTime / duration) * w;
         const segWidth = Math.max(2, endX - startX);
 
         ctx.fillStyle = spk.isFlaggedSynthetic
-          ? 'rgba(239, 68, 68, 0.08)'
-          : 'rgba(14, 165, 233, 0.08)';
+          ? 'rgba(239, 68, 68, 0.12)'
+          : 'rgba(0, 242, 254, 0.08)';
         ctx.fillRect(startX, 0, segWidth, h);
 
-        // Top accent line
-        ctx.strokeStyle = spk.color || (spk.isFlaggedSynthetic ? '#EF4444' : '#0EA5E9');
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = spk.color || (spk.isFlaggedSynthetic ? '#EF4444' : '#00F2FE');
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(startX, 1);
         ctx.lineTo(endX, 1);
         ctx.stroke();
       });
 
-      // Fetch real analyser data if playing
+      // Live Web Audio data
       const isPlaying = audioEngine.getIsPlaying() || isLiveMonitoring;
       if (isPlaying) {
         if (!localAnalyserData) {
@@ -113,7 +110,7 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
         audioEngine.getWaveformData(localAnalyserData);
       }
 
-      // Draw waveform bars
+      // Waveform bars
       const bars = peaksRef.current;
       const barWidth = w / bars.length;
       const playheadX = (t / duration) * w;
@@ -122,7 +119,6 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
         const x = i * barWidth;
         let amp = peak;
 
-        // Modulate with live audio if active and near playhead
         if (isPlaying && localAnalyserData) {
           const sampleIdx = Math.floor((i / bars.length) * localAnalyserData.length);
           const liveVal = Math.abs((localAnalyserData[sampleIdx] - 128) / 128);
@@ -131,58 +127,54 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
           }
         }
 
-        const barHeight = Math.max(4, amp * (h - 24));
+        const barHeight = Math.max(3, amp * (h - 22));
         const y = (h - barHeight) / 2;
-
         const isPast = x <= playheadX;
 
         if (isPast) {
-          // Gradient for played portion
           const grad = ctx.createLinearGradient(0, y, 0, y + barHeight);
-          grad.addColorStop(0, '#0284C7');
-          grad.addColorStop(0.5, '#2563EB');
-          grad.addColorStop(1, '#4F46E5');
+          grad.addColorStop(0, '#00F2FE');
+          grad.addColorStop(0.5, '#38BDF8');
+          grad.addColorStop(1, '#6366F1');
           ctx.fillStyle = grad;
         } else {
-          ctx.fillStyle = '#CBD5E1';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
         }
 
-        // Rounded bar
         ctx.beginPath();
-        ctx.roundRect(x + 1, y, Math.max(1.5, barWidth - 1.5), barHeight, 2);
+        ctx.roundRect(x + 0.5, y, Math.max(1.5, barWidth - 1), barHeight, 1.5);
         ctx.fill();
       });
 
-      // Draw playhead vertical scanning line
+      // Scanning playhead with cyan glow
       if (playheadX <= w) {
-        // Glow effect
-        ctx.shadowColor = 'rgba(14, 165, 233, 0.6)';
-        ctx.shadowBlur = 8;
-        ctx.strokeStyle = '#0284C7';
-        ctx.lineWidth = 2;
+        ctx.shadowColor = '#00F2FE';
+        ctx.shadowBlur = 10;
+        ctx.strokeStyle = '#00F2FE';
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
         ctx.moveTo(playheadX, 0);
         ctx.lineTo(playheadX, h);
         ctx.stroke();
         ctx.shadowBlur = 0;
 
-        // Playhead head handle
-        ctx.fillStyle = '#0284C7';
+        // Playhead head
+        ctx.fillStyle = '#00F2FE';
         ctx.beginPath();
-        ctx.arc(playheadX, 6, 4.5, 0, Math.PI * 2);
+        ctx.arc(playheadX, 5, 4, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = '#FFFFFF';
         ctx.beginPath();
-        ctx.arc(playheadX, 6, 2, 0, Math.PI * 2);
+        ctx.arc(playheadX, 5, 1.8, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Draw hover indicator line if mouse is over
+      // Hover indicator line
       if (isHovering && interactive) {
         const hoverX = (hoverTime / duration) * w;
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.6)';
         ctx.setLineDash([3, 3]);
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(hoverX, 0);
         ctx.lineTo(hoverX, h);
@@ -233,8 +225,8 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
   };
 
   return (
-    <div className="relative w-full select-none rounded-xl border border-sky-100 bg-white/90 p-2 shadow-sm">
-      <div className="relative overflow-hidden rounded-lg">
+    <div className="relative w-full select-none rounded-2xl border border-white/10 bg-[#0A0E1A]/90 p-2.5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+      <div className="relative overflow-hidden rounded-xl border border-white/5">
         <canvas
           ref={canvasRef}
           className={`w-full block ${interactive ? 'cursor-pointer' : ''}`}
@@ -247,25 +239,23 @@ export const WaveformCanvas: React.FC<WaveformCanvasProps> = ({
       </div>
 
       {/* Timeline labels */}
-      <div className="mt-1.5 flex items-center justify-between px-1 text-[11px] font-mono font-medium text-slate-500">
-        <div className="flex items-center gap-1.5">
-          <span className="inline-block h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
-          <span className="text-slate-800">{formatTime(currentTime)}</span>
-          <span className="text-slate-400">/</span>
+      <div className="mt-2 flex items-center justify-between px-1 text-[11px] font-mono font-medium text-slate-400">
+        <div className="flex items-center gap-2">
+          <span className="inline-block h-2 w-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#00F2FE]" />
+          <span className="text-white font-semibold">{formatTime(currentTime)}</span>
+          <span className="text-slate-600">/</span>
           <span>{formatTime(duration)}</span>
         </div>
 
         {isHovering && interactive && (
-          <div className="rounded bg-sky-50 px-1.5 py-0.5 text-sky-700 border border-sky-200 text-[10px]">
+          <div className="rounded-md bg-white/[0.06] px-2 py-0.5 text-cyan-300 border border-cyan-500/30 text-[10px]">
             Seek: {formatTime(hoverTime)}
           </div>
         )}
 
-        <div className="flex items-center gap-3 text-slate-400">
+        <div className="flex items-center gap-3 text-slate-500">
           <span>0.0s</span>
-          <span>{(duration * 0.25).toFixed(1)}s</span>
           <span>{(duration * 0.5).toFixed(1)}s</span>
-          <span>{(duration * 0.75).toFixed(1)}s</span>
           <span>{duration.toFixed(1)}s</span>
         </div>
       </div>

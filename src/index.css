@@ -6,20 +6,19 @@
     --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    /* Theme colors: Pretty blue palette and luminous white gradients */
-    --color-bg-base: #F8FAFD;
-    --color-bg-white: #FFFFFF;
-    --color-ice-blue: #F0F7FF;
-    --color-sky-light: #E0F2FE;
-    --color-blue-soft: #DBEAFE;
+    /* Light Theme: Modern Aesthetic Blue and White with Liquid Glass */
+    --color-bg-base: #F8FAFC;
+    --color-bg-surface: #FFFFFF;
+    --color-bg-card: rgba(255, 255, 255, 0.88);
+    --color-bg-glass: rgba(255, 255, 255, 0.8);
     
-    --color-primary: #0284C7;
-    --color-primary-dark: #0369A1;
-    --color-azure: #2563EB;
+    --color-primary: #2563EB;
+    --color-primary-glow: rgba(37, 99, 235, 0.25);
+    --color-sky: #0284C7;
     --color-indigo: #4F46E5;
     
-    --color-border-subtle: #E2E8F0;
-    --color-border-blue: rgba(56, 189, 248, 0.25);
+    --color-border-subtle: rgba(224, 242, 254, 0.8);
+    --color-border-blue: rgba(37, 99, 235, 0.2);
     
     --color-text-main: #0F172A;
     --color-text-muted: #475569;
@@ -31,10 +30,10 @@
     background-color: var(--color-bg-base);
     color: var(--color-text-main);
     background-image: 
-      radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 85% 20%, rgba(79, 70, 229, 0.06) 0%, transparent 45%),
-      radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 50%),
-      linear-gradient(180deg, #FFFFFF 0%, #F8FAFD 50%, #F1F5F9 100%);
+      radial-gradient(circle at 15% 0%, rgba(2, 132, 199, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(59, 130, 246, 0.07) 0%, transparent 45%),
+      radial-gradient(circle at 50% 85%, rgba(224, 242, 254, 0.45) 0%, transparent 60%),
+      linear-gradient(180deg, #F0F7FF 0%, #F8FAFC 45%, #FFFFFF 100%);
     background-attachment: fixed;
     min-height: 100vh;
   }
@@ -49,148 +48,77 @@
   }
 }
 
-/* Custom Utilities for Aesthetic Light Blue & White Gradient Design */
+/* Custom Utilities for Modern Blue & White Liquid Glass Aesthetic */
 @layer utilities {
   .bg-glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-  }
-
-  .bg-glass-blue {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 247, 255, 0.85) 100%);
+    background: rgba(255, 255, 255, 0.78);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(186, 230, 253, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 10px 35px -5px rgba(2, 132, 199, 0.06);
+  }
+
+  .bg-glass-pill {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(224, 242, 254, 0.95);
+    box-shadow: 0 12px 36px rgba(2, 132, 199, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
   }
 
   .bg-glass-card {
-    background: #FFFFFF;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(224, 242, 254, 0.85);
+    box-shadow: 0 12px 32px -4px rgba(2, 132, 199, 0.06), 0 2px 6px rgba(0, 0, 0, 0.02);
   }
 
   .bg-glass-card:hover {
-    box-shadow: 0 12px 30px -4px rgba(14, 165, 233, 0.12), 0 4px 10px -2px rgba(37, 99, 235, 0.04);
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 16px 36px -4px rgba(2, 132, 199, 0.12), inset 0 1px 1px rgba(255, 255, 255, 1);
   }
 
   .text-gradient-blue {
-    background: linear-gradient(135deg, #0369A1 0%, #2563EB 50%, #4F46E5 100%);
+    background: linear-gradient(135deg, #0284C7 0%, #2563EB 50%, #4F46E5 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .text-gradient-cyan {
-    background: linear-gradient(135deg, #0284C7 0%, #06B6D4 100%);
+    background: linear-gradient(135deg, #0284C7 0%, #0EA5E9 50%, #2563EB 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .shadow-soft-blue {
-    box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.08), 0 4px 12px -2px rgba(14, 165, 233, 0.05);
+    box-shadow: 0 12px 32px -4px rgba(2, 132, 199, 0.08), 0 4px 12px -2px rgba(37, 99, 235, 0.05);
   }
 
   .shadow-glow-blue {
-    box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+    box-shadow: 0 0 30px rgba(37, 99, 235, 0.22);
   }
 
-  .shadow-glow-card {
-    box-shadow: 0 10px 40px -10px rgba(14, 165, 233, 0.15), 0 0 0 1px rgba(186, 230, 253, 0.6);
-  }
-
-  .tech-grid-pattern {
-    background-size: 32px 32px;
+  .tech-grid-light {
+    background-size: 40px 40px;
     background-image: 
-      linear-gradient(to right, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
-  }
-
-  .tech-dots-pattern {
-    background-size: 24px 24px;
-    background-image: radial-gradient(rgba(37, 99, 235, 0.08) 1.2px, transparent 1.2px);
+      linear-gradient(to right, rgba(2, 132, 199, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(2, 132, 199, 0.04) 1px, transparent 1px);
   }
 }
 
-/* Animations for signal particles, scanning laser, waveform pulse */
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
+/* Accessible focus rings */
+*:focus-visible {
+  outline: 2px solid #2563EB !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  50% {
-    opacity: 0.85;
-    transform: scale(1.04);
-  }
-}
-
-@keyframes laserScan {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes floatGentle {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(1deg);
-  }
-}
-
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-14px) rotate(-1.5deg);
-  }
-}
-
-@keyframes waveOscillate {
-  0%, 100% {
-    height: 8px;
-  }
-  50% {
-    height: 28px;
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 3s ease-in-out infinite;
-}
-
-.animate-laser-scan {
-  animation: laserScan 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-.animate-float-gentle {
-  animation: floatGentle 6s ease-in-out infinite;
-}
-
-.animate-float-slow {
-  animation: floatSlow 8s ease-in-out infinite;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #F1F5F9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
 }
