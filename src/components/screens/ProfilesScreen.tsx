@@ -9,7 +9,6 @@ import {
   Sparkles
 } from 'lucide-react';
 import { VoiceProfile, AnalysisIncident } from '../../types';
-import { DemoBadge } from '../common/DemoBadge';
 import { ScreenId } from '../layout/Navbar';
 import { LiquidButton } from '../ui/liquid-glass-button';
 
@@ -32,7 +31,8 @@ export const ProfilesScreen: React.FC<ProfilesScreenProps> = ({
   const [selectedDept, setSelectedDept] = useState<string>('all');
   const [selectedProfile, setSelectedProfile] = useState<VoiceProfile | null>(null);
 
-  const departments = ['all', 'Executive Leadership', 'Corporate Treasury', 'Engineering & Technology', 'Global Cyber Defense', 'Private Banking'];
+  const availableDepts = Array.from(new Set(profiles.map((p) => p.department).filter(Boolean)));
+  const departments = ['all', ...availableDepts];
 
   const filteredProfiles = profiles.filter((p) => {
     const matchesSearch = p.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,7 +68,6 @@ export const ProfilesScreen: React.FC<ProfilesScreenProps> = ({
             <h2 className="text-2xl font-bold text-slate-900 font-display tracking-tight">
               Organizational Identity Directory
             </h2>
-            <DemoBadge type="verified" />
           </div>
           <p className="text-xs sm:text-sm text-slate-500 font-sans mt-1">
             Cryptographic voiceprints and verified biometric identity registry for executive financial & operational approval
@@ -118,87 +117,112 @@ export const ProfilesScreen: React.FC<ProfilesScreenProps> = ({
         </div>
       </div>
 
-      {/* Profiles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredProfiles.map((prof) => (
-          <div
-            key={prof.id}
-            className="p-5 rounded-3xl border border-sky-100/90 bg-white/90 backdrop-blur-xl shadow-soft-blue hover:shadow-lg hover:border-blue-300 transition-all flex flex-col justify-between space-y-4"
+      {/* Profiles Grid or Empty State */}
+      {filteredProfiles.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center rounded-3xl border border-dashed border-sky-200 bg-white/70 shadow-soft-blue space-y-4">
+          <div className="p-4 rounded-3xl bg-sky-50 border border-sky-200 text-blue-600 shadow-soft-blue">
+            <Fingerprint className="h-8 w-8 text-blue-600" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-slate-900 font-display">
+              No Enrolled Voiceprint Identities
+            </h3>
+            <p className="text-xs text-slate-500 max-w-md">
+              No caller or executive voiceprints are enrolled yet. Click below to register an authorized voiceprint for biometric verification.
+            </p>
+          </div>
+          <LiquidButton
+            onClick={handleEnrollClick}
+            size="default"
+            primary={true}
+            className="cursor-pointer shadow-xs"
           >
-            <div>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={prof.avatarUrl}
-                    alt={prof.fullName}
-                    className="w-12 h-12 rounded-2xl object-cover border border-sky-100 shadow-xs"
-                  />
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 leading-tight">
-                      {prof.fullName}
-                    </h3>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">{prof.role}</p>
-                    <span className="text-[10px] font-mono text-slate-400">{prof.employeeId}</span>
+            <UserPlus className="h-4 w-4 mr-1.5" />
+            <span>Enroll First Voiceprint</span>
+          </LiquidButton>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredProfiles.map((prof) => (
+            <div
+              key={prof.id}
+              className="p-5 rounded-3xl border border-sky-100/90 bg-white/90 backdrop-blur-xl shadow-soft-blue hover:shadow-lg hover:border-blue-300 transition-all flex flex-col justify-between space-y-4"
+            >
+              <div>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={prof.avatarUrl}
+                      alt={prof.fullName}
+                      className="w-12 h-12 rounded-2xl object-cover border border-sky-100 shadow-xs"
+                    />
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 leading-tight">
+                        {prof.fullName}
+                      </h3>
+                      <p className="text-xs text-slate-500 font-medium mt-0.5">{prof.role}</p>
+                      <span className="text-[10px] font-mono text-slate-400">{prof.employeeId}</span>
+                    </div>
+                  </div>
+
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
+                    prof.status === 'active'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200'
+                  }`}>
+                    {prof.status === 'active' ? 'ACTIVE' : 'UPDATE REQ'}
+                  </span>
+                </div>
+
+                {/* Department and Voiceprint Clearance */}
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <span className="px-2.5 py-0.5 rounded-md bg-slate-50 text-[10px] font-medium text-slate-600 border border-slate-200/60">
+                    {prof.department}
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-emerald-50 text-[10px] font-mono font-semibold text-emerald-700 border border-emerald-200/60 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Verified Voiceprint
+                  </span>
+                </div>
+
+                {/* Quality & Fingerprint Details */}
+                <div className="mt-4 pt-3 border-t border-sky-100 space-y-1.5 text-xs font-mono">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Voiceprint Health:</span>
+                    <span className="font-bold text-emerald-600">{prof.voiceprintQuality}% Match</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Enrolled Samples:</span>
+                    <span className="text-slate-700 font-semibold">{prof.voiceSamplesCount} ({prof.sampleDurationSec}s total)</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-slate-500">Embedding Hash:</span>
+                    <span className="text-blue-600 truncate max-w-[130px] font-mono">{prof.embeddingHash}</span>
                   </div>
                 </div>
-
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
-                  prof.status === 'active'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-amber-50 text-amber-700 border-amber-200'
-                }`}>
-                  {prof.status === 'active' ? 'ACTIVE' : 'UPDATE REQ'}
-                </span>
               </div>
 
-              {/* Department and Voiceprint Clearance */}
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                <span className="px-2.5 py-0.5 rounded-md bg-slate-50 text-[10px] font-medium text-slate-600 border border-slate-200/60">
-                  {prof.department}
-                </span>
-                <span className="px-2.5 py-0.5 rounded-md bg-emerald-50 text-[10px] font-mono font-semibold text-emerald-700 border border-emerald-200/60 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Verified Voiceprint
-                </span>
-              </div>
+              {/* Actions */}
+              <div className="pt-3 border-t border-sky-100 flex items-center justify-between gap-2">
+                <button
+                  onClick={() => setSelectedProfile(prof)}
+                  className="text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer transition-colors"
+                >
+                  Inspect Details
+                </button>
 
-              {/* Quality & Fingerprint Details */}
-              <div className="mt-4 pt-3 border-t border-sky-100 space-y-1.5 text-xs font-mono">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Voiceprint Health:</span>
-                  <span className="font-bold text-emerald-600">{prof.voiceprintQuality}% Match</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Enrolled Samples:</span>
-                  <span className="text-slate-700 font-semibold">{prof.voiceSamplesCount} ({prof.sampleDurationSec}s total)</span>
-                </div>
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-500">Embedding Hash:</span>
-                  <span className="text-blue-600 truncate max-w-[130px] font-mono">{prof.embeddingHash}</span>
-                </div>
+                <button
+                  onClick={() => handleTestVerification(prof)}
+                  className="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-blue-700 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 shadow-xs"
+                >
+                  <span>Verify Caller</span>
+                  <ChevronRight className="h-3 w-3" />
+                </button>
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="pt-3 border-t border-sky-100 flex items-center justify-between gap-2">
-              <button
-                onClick={() => setSelectedProfile(prof)}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer transition-colors"
-              >
-                Inspect Details
-              </button>
-
-              <button
-                onClick={() => handleTestVerification(prof)}
-                className="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 border border-sky-200 text-blue-700 text-xs font-semibold transition-all cursor-pointer flex items-center gap-1 shadow-xs"
-              >
-                <span>Verify Caller</span>
-                <ChevronRight className="h-3 w-3" />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Detail Modal */}
       {selectedProfile && (

@@ -68,7 +68,7 @@ export const DetectionResultsScreen: React.FC<DetectionResultsScreenProps> = ({
       recommendedActions: incident.recommendedActions,
       modelGovernance: {
         ephemeralProcessing: true,
-        responsibleAiNotice: 'Demonstration simulation report generated for Smart India Hackathon evaluation.',
+        responsibleAiNotice: 'Demonstration simulation report generated for forensic audit evaluation.',
       },
     };
 

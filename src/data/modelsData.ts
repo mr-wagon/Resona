@@ -3,12 +3,12 @@ import { ModelRegistryItem, SystemTelemetry } from '../types';
 export const systemTelemetry: SystemTelemetry = {
   platformStatus: 'OPERATIONAL',
   activeModelsCount: 4,
-  averageLatencyMs: 142,
-  globalThreatLevel: 'ELEVATED',
+  averageLatencyMs: 86,
+  globalThreatLevel: 'LOW',
   memoryIsolatedProcessing: true,
-  audioStreamsProcessed: 14892,
-  verifiedIdentitiesCount: 142,
-  spoofAttemptsBlocked: 87,
+  audioStreamsProcessed: 0,
+  verifiedIdentitiesCount: 0,
+  spoofAttemptsBlocked: 0,
 };
 
 export const modelRegistry: ModelRegistryItem[] = [

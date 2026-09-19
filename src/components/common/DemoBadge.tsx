@@ -20,8 +20,8 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
       bg: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/25',
       dot: 'bg-cyan-400',
       icon: Sparkles,
-      tooltipTitle: 'Simulated Hackathon Dataset',
-      tooltipText: 'This audio incident and model scores are pre-computed demonstration artifacts created for the Smart India Hackathon showcase to highlight transparent risk explainability without fabricating real live inference.',
+      tooltipTitle: 'Simulated Forensic Dataset',
+      tooltipText: 'This audio incident and model scores are pre-computed demonstration artifacts created to highlight transparent risk explainability without fabricating real live inference.',
     },
     experimental: {
       label: 'EXPERIMENTAL MODEL',
@@ -78,7 +78,7 @@ export const DemoBadge: React.FC<DemoBadgeProps> = ({
           </p>
           <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400 font-mono">
             <span>Resona Governance</span>
-            <span className="text-cyan-400">SIH-2026 Prototype</span>
+            <span className="text-cyan-400">Enterprise Prototype</span>
           </div>
         </div>
       )}

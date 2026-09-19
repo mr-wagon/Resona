@@ -84,14 +84,11 @@ export const OverviewScreen: React.FC<OverviewScreenProps> = ({
         <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/90 border border-sky-100 text-xs font-mono text-slate-700 shadow-soft-blue backdrop-blur-md">
           <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
           <span className="font-semibold text-slate-900">Voice Intelligence & Identity Security</span>
-          <span className="text-slate-300">|</span>
-          <span className="text-blue-600 font-bold">Smart India Hackathon</span>
         </div>
 
         {/* Big Editorial Headline */}
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 font-display leading-[1.05]">
-          Hear Beyond the <br />
-          <span className="text-gradient-blue">Acoustic Surface.</span>
+        <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight font-display leading-[1.05]">
+          <span className="text-gradient-blue">RESONA</span>
         </h1>
 
         {/* Clear, High-Impact Supporting Copy */}

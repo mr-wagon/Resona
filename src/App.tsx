@@ -270,8 +270,6 @@ export function App() {
             <span className="font-extrabold font-display text-slate-900 tracking-tight">RESONA</span>
             <span className="text-slate-300">•</span>
             <span className="text-slate-600 font-medium">Hear Beyond the Surface.</span>
-            <span className="hidden md:inline text-slate-300">|</span>
-            <span className="hidden md:inline text-slate-400">Smart India Hackathon 2026 Prototype</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono">
